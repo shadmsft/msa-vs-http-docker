@@ -1,0 +1,70 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: catalog
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: catalog
+    spec:
+      containers:
+      - name: catalog
+        image: msaacr2.azurecr.io/catalog:latest
+        ports:
+        - containerPort: 80
+          name: catalog
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalog
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+  selector:
+    app: catalog
+---
+
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: webappmvc
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5 
+  template:
+    metadata:
+      labels:
+        app: webappmvc
+    spec:
+      containers:
+      - name: webappmvc
+        image: msaacr2.azurecr.io/webappmvc:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: 250m
+          limits:
+            cpu: 500m
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: webappmvc
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+  selector:
+    app: webappmvc

@@ -1,0 +1,15 @@
+version: '3.4'
+
+services:
+  catalog:
+    image: catalog
+    build:
+      context: .
+      dockerfile: catalog/Dockerfile
+
+  webappmvc:
+    image: webappmvc
+    build:
+      context: .
+      dockerfile: webappmvc/Dockerfile
+
